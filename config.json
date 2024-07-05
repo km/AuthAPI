@@ -3,6 +3,5 @@
     "maxPasswordLength": 128,
     "minNameLength": 2,
     "maxNameLength": 64,
-    "sessionExpiryTime": 300,
-    "hashingMethod": "MD5"
+    "sessionExpiryTime": 300
 }
