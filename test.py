@@ -26,3 +26,18 @@ print("No data send aside from including the bearer token in the headers ", logr
 
 logoutreq = requests.get(url='http://127.0.0.1:5000/logout', headers = {"Authorization": "Bearer " + logreqjson["sessionToken"]})
 print("Response: ", logoutreq.text)
+
+print("Testing getName with a logged out token...")
+
+logoutreq = requests.get(url='http://127.0.0.1:5000/getName', headers = {"Authorization": "Bearer " + logreqjson["sessionToken"]})
+print("Response: ", logoutreq.text)
+
+print("Relogging in...")
+logreq = requests.post(url='http://127.0.0.1:5000/login', json=regjson)
+logreqjson = json.loads(logreq.text)
+print("Response: ", logreq.text)
+
+print("Testing getName with a valid token...")
+validtoken = requests.get(url='http://127.0.0.1:5000/getName', headers = {"Authorization": "Bearer " + logreqjson["sessionToken"]})
+print("Response: ", validtoken.text)
+

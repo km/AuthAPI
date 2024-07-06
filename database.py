@@ -68,3 +68,17 @@ def deleteToken(token):
     cursor.execute("UPDATE users SET currentToken = ? WHERE currentToken = ?", ("",token))
     connection.commit()
     connection.close()
+
+#Attempts to retrieve name from database, otherwise returns empty string
+def retrieveName(token):
+    connection = sqlite3.connect("users.db")
+    cursor = connection.cursor()
+    cursor.execute("SELECT name FROM users WHERE currentToken = ?", (token,))
+    name = cursor.fetchone()
+    connection.commit()
+    connection.close()
+    
+    if(name != None):
+        return name[0]
+    else:
+        return ''
