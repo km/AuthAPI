@@ -7,7 +7,7 @@ def createDatabase():
     connection = sqlite3.connect("users.db")
     cursor = connection.cursor()
     #Only gets executed if the table hasn't been created
-    cursor.execute("CREATE TABLE IF NOT EXISTS users (name TEXT, password TEXT, email TEXT)")
+    cursor.execute("CREATE TABLE IF NOT EXISTS users (name TEXT, password TEXT, email TEXT, currentToken TEXT, sessionExpiry INTEGER)")
     connection.commit()
     connection.close()
 
@@ -35,3 +35,29 @@ def encrypt(text):
     salt = bcrypt.gensalt()
     hashed_password = bcrypt.hashpw(text.encode('utf-8'), salt)
     return hashed_password
+
+#Checks the given credential, if they are valid returns true.
+
+def checkCredentials(email, password):
+    #Validate credentials
+    connection = sqlite3.connect("users.db")
+    cursor = connection.cursor()
+    cursor.execute("SELECT password FROM users WHERE email = ?", (email,))
+    dbpassword = cursor.fetchone()
+    connection.commit()
+    connection.close()
+
+    if dbpassword:
+        if bcrypt.checkpw(password.encode('utf-8'), dbpassword[0]):
+            #hashed password matches the given password
+            return True
+    
+    return False
+
+
+def createSession(email, token, expiryDate):
+    connection = sqlite3.connect("users.db")
+    cursor = connection.cursor()
+    cursor.execute("UPDATE users SET currentToken = ?, sessionExpiry = ? WHERE email = ?", (token,expiryDate,email))
+    connection.commit()
+    connection.close()

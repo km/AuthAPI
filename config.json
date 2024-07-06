@@ -3,5 +3,6 @@
     "maxPasswordLength": 128,
     "minNameLength": 2,
     "maxNameLength": 64,
-    "sessionExpiryTime": 300
+    "sessionExpiryTime": 300,
+    "tokenLength": 24
 }

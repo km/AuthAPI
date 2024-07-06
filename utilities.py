@@ -1,12 +1,15 @@
 import re
 import json
 from database import checkMail
+import secrets
+import string
+import time
+
 with open("config.json", "r") as dir:
     config = json.load(dir)
 
 
 def checkData(json):
-
     #check if email is valid using regex and not in database
     try:
         mailRegex = r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,7}\b'
@@ -23,7 +26,6 @@ def checkData(json):
         if(len(json['password']) > config["maxPasswordLength"]):
             return "Password too long, maximum " + str(config["maxPasswordLength"]) + " characters"
 
-
         #check name length
         if(len(json['name']) > config["maxNameLength"]):
             return "Name too long, keep under " + str(config["maxNameLength"]) + " characters"
@@ -35,3 +37,14 @@ def checkData(json):
 
     #If it returns an empty string then the registeration data is valid.
     return ""
+
+#generates a random string of specified length, that will be used as the token and returns the current time + the expiry time from config
+def generateToken(length=config['tokenLength']):
+    chars = string.ascii_letters + string.digits
+    token = ''
+    for x in range(length):
+        token += secrets.choice(chars)
+
+    return token, int(time.time()) +  config['sessionExpiryTime']
+
+
