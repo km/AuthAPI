@@ -4,6 +4,7 @@ from database import checkMail
 import secrets
 import string
 import time
+import jwt
 
 with open("config.json", "r") as dir:
     config = json.load(dir)
@@ -39,12 +40,20 @@ def checkData(json):
     return ""
 
 #generates a random string of specified length, that will be used as the token and returns the current time + the expiry time from config
-def generateToken(length=config['tokenLength']):
-    chars = string.ascii_letters + string.digits
-    token = ''
-    for x in range(length):
-        token += secrets.choice(chars)
+def generateToken():
+    expiry = int(time.time() + config["sessionExpiryTime"])
+    data = {"exp": expiry}
+    #generates a jwt token with default HS256 encryption
+    token = jwt.encode(data, config["tokenSecret"])
+    return token, expiry
 
-    return token, int(time.time()) +  config['sessionExpiryTime']
-
-
+#Checks if token is valid and not expired
+def checkTokenValidity(token):
+    #Will throw exception if the token is expired or invalid
+    try:
+        decoded = jwt.decode(token, config["tokenSecret"], algorithms=["HS256"])
+        return True
+    except Exception as e:
+        print(e)
+        return False
+    

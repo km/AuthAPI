@@ -1,5 +1,5 @@
 from flask import Blueprint, request
-from utilities import checkData, generateToken
+from utilities import checkData, generateToken, checkTokenValidity
 import database
 auth = Blueprint('auth', __name__)
 
@@ -30,7 +30,8 @@ def register():
         return {"Error": "JSON accepted only"}, 415
 
 
-#Endpoint for logging in, requires email and password, will return a token if 
+#Endpoint for logging in, requires email and password, will return a token if the credentials are correct
+#Format {"email": email, "password": password}
 @auth.post('/login')
 def login():
         #Only accept json
@@ -46,9 +47,10 @@ def login():
         if(dataValidity):
             try:
                 token, expiry = generateToken()
-                database.createSession(json['email'], token, expiry)
-                return {"success": "User sucessfully logged in", "sessionToken": token, "sessionExpiry": expiry}
-            except:
+                database.createSession(json['email'], token)
+                return {"success": "User sucessfully logged in", "sessionToken": token, "sessionExpiry": expiry}, 200
+            except Exception as e:
+                print(e)
                 return {"error": "Server error, please try again later"}, 500
 
         else:
@@ -57,3 +59,28 @@ def login():
 
     except:
         return {"error": "JSON accepted only"}, 415
+
+#Logout endpoint, all the user has to do is access this endpoint using a get request, with the authorization token being in the headers then the session gets invalidated.
+@auth.get('/logout')
+def logout():
+    try:
+        #throws exception if there is no authorization header
+        tokenheader = request.headers.get('Authorization')
+        #Authorization is by bearer token
+        if 'Bearer ' in tokenheader:
+          token = tokenheader.split()[1] 
+          if checkTokenValidity(token):
+              #token is valid, so we remove it from the database
+              try:
+                database.deleteToken(token)
+                return {"Success": "Successfully logged out"}, 200
+              
+              except Exception as e:
+                  return {"error": "Server error, please try again later"}, 500
+          else:
+              return {"error": "Token is already invalid/expired"}, 401
+        else:
+            return {"error": "Check authorization headers"}, 401
+
+    except:
+        return {"error": "Check authorization headers"}, 401

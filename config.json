@@ -4,5 +4,5 @@
     "minNameLength": 2,
     "maxNameLength": 64,
     "sessionExpiryTime": 300,
-    "tokenLength": 24
+    "tokenSecret": "qwdqwd"    
 }

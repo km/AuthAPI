@@ -7,7 +7,7 @@ def createDatabase():
     connection = sqlite3.connect("users.db")
     cursor = connection.cursor()
     #Only gets executed if the table hasn't been created
-    cursor.execute("CREATE TABLE IF NOT EXISTS users (name TEXT, password TEXT, email TEXT, currentToken TEXT, sessionExpiry INTEGER)")
+    cursor.execute("CREATE TABLE IF NOT EXISTS users (name TEXT, password TEXT, email TEXT, currentToken TEXT)")
     connection.commit()
     connection.close()
 
@@ -37,7 +37,6 @@ def encrypt(text):
     return hashed_password
 
 #Checks the given credential, if they are valid returns true.
-
 def checkCredentials(email, password):
     #Validate credentials
     connection = sqlite3.connect("users.db")
@@ -54,10 +53,18 @@ def checkCredentials(email, password):
     
     return False
 
-
-def createSession(email, token, expiryDate):
+#Associates the specified token to the given email entry
+def createSession(email, token):
     connection = sqlite3.connect("users.db")
     cursor = connection.cursor()
-    cursor.execute("UPDATE users SET currentToken = ?, sessionExpiry = ? WHERE email = ?", (token,expiryDate,email))
+    cursor.execute("UPDATE users SET currentToken = ? WHERE email = ?", (token,email))
+    connection.commit()
+    connection.close()
+
+#Deletes the specified token from the database, so it can't be used to access protected endpoints
+def deleteToken(token):
+    connection = sqlite3.connect("users.db")
+    cursor = connection.cursor()
+    cursor.execute("UPDATE users SET currentToken = ? WHERE currentToken = ?", ("",token))
     connection.commit()
     connection.close()
