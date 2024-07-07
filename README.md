@@ -56,7 +56,7 @@ Which will run the API on a local server on `http://127.0.0.1:5000`
  `{"email": email, "password": password, "name" : name} ` JSON
 ##### Response
 If  request is successful:
-```json
+```js
 {"Success": "User succesfully registered"}
 ```
 Response Code `201`
@@ -77,7 +77,7 @@ print("Response: ", regReq.text)
  `{"email": email, "password": password} ` JSON
 ##### Response
 If  request is successful:
-```json
+```js
 {"success": "User sucessfully logged in", "sessionToken": token, "sessionExpiry": expiry}
 ```
 Response Code `200`
@@ -99,7 +99,7 @@ print("Response: ", logreq.text)
  `Authorization: Bearer token` where token is the sessionToken, from logging in.
 ##### Response
 If request is successful:
-```json
+```js
 {"Success": "Successfully logged out"}
 ```
 Response Code `200`
@@ -118,7 +118,7 @@ print("Response: ", logoutreq.text)
  `Authorization: Bearer token` where token is the sessionToken, from logging in.
 ##### Response
 If request is successful:
-```json
+```js
 {"name": name}
 ```
 Response Code `200`
@@ -130,3 +130,11 @@ logreqjson = json.loads(logreq.text)
 nameReq = requests.get(url='http://127.0.0.1:5000/getName', headers = {"Authorization": "Bearer " + logreqjson["sessionToken"]})
 print("Response: ", nameReq.text)
 ```
+
+
+## Testing
+In order to test the API, you can use a tool such as Postman, or you can use the included `test.py`, which will test all the endpoints. Simply run:
+```
+python test.py
+```
+Make sure that the local server is running, for the script to work.
