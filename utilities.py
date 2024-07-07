@@ -1,11 +1,10 @@
 import re
 import json
 from database import checkMail
-import secrets
-import string
 import time
 import jwt
 
+#Load configuration
 with open("config.json", "r") as dir:
     config = json.load(dir)
 
@@ -16,7 +15,6 @@ def checkData(json):
         mailRegex = r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,7}\b'
         if(not re.fullmatch(mailRegex, json['email'])):
             return "Invalid Email"
-        print(checkMail(json['email']))
         #check if mail in database
         if(checkMail(json['email'])):
             return "Email Already Registered"
@@ -33,13 +31,13 @@ def checkData(json):
         if(len(json['name']) < config["minNameLength"]):
             return "Name too short, keep over " + str(config["minNameLength"]) + " characters"
     except Exception as e:
-        print(e)
+     
         return "Missing fields"
 
     #If it returns an empty string then the registeration data is valid.
     return ""
 
-#generates a random string of specified length, that will be used as the token and returns the current time + the expiry time from config
+#generates a random jwt token, and returns the current time + the expiry time from config
 def generateToken():
     expiry = int(time.time() + config["sessionExpiryTime"])
     data = {"exp": expiry}

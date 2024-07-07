@@ -26,6 +26,8 @@ def checkMail(email):
     cursor = connection.cursor()
     cursor.execute("SELECT 1 FROM users WHERE email = ?", (email,))
     result = cursor.fetchone()
+    connection.commit()
+    connection.close()
     if(result != None):
         return True
     return False

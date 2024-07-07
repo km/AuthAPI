@@ -26,7 +26,7 @@ def getToken():
                    print(e)
                    return {"error": "Server error, please try again later."}, 500
         else:
-              #Invalid Token
+              #Wrong format for authorization header
               return {"error": "Check authorization headers"}, 401    
     except:
         return {"error": "Check authorization headers"}, 401

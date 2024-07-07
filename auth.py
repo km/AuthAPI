@@ -23,7 +23,6 @@ def register():
                 database.addUser(json["name"], json["email"], json["password"])
                 return {"Success": "User succesfully registered"}, 201
             except Exception as e:
-                print(e)
                 return {"Error": "Server error, please try again later"}, 500
 
     except:
@@ -41,16 +40,15 @@ def login():
             #will throw exception if email or password arent in the json
             dataValidity = database.checkCredentials(json['email'], json['password'])
         except Exception as e:
-            print(e)
             return {"error": "Missing fields"}, 422
 
         if(dataValidity):
             try:
+                #Credentials are valid, so create a session and return success
                 token, expiry = generateToken()
                 database.createSession(json['email'], token)
                 return {"success": "User sucessfully logged in", "sessionToken": token, "sessionExpiry": expiry}, 200
             except Exception as e:
-                print(e)
                 return {"error": "Server error, please try again later"}, 500
 
         else:
